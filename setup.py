@@ -11,7 +11,7 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name='equations_backend',
+    name='eqs_backend',
     version='0.0.1',
     description='Backend for the Equations database',
     long_description=readme,
