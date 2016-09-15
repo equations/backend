@@ -4,7 +4,7 @@
 
 from flask import Flask, request
 from neo4j.v1 import GraphDatabase, basic_auth
-import json
+from .helpers import *
 
 # Define Flask server instance.
 server = Flask(__name__)
@@ -21,6 +21,8 @@ def setupDb():
     """
 
     db.run('CREATE (:ContextRoot)')
+    db.run('CREATE CONSTRAINT ON (node:Context) ASSERT node.label IS UNIQUE')
+    db.run('CREATE CONSTRAINT ON (node:Variable) ASSERT node.label IS UNIQUE')
 
 
 def openDb():
@@ -61,44 +63,54 @@ def appendDerivation():
     return '{}'
 
 
-@server.route('/definition/', methods=['POST'])
-def addDefinition():
+@server.route('/variable/', methods=['POST'])
+def addVariable():
     """
-    Add new definition within the given context.
+    Add new variable within the given context.
     """
 
-    return '{}'
+    data = request.get_json()
+    if isDictAndContains(data, ['label', 'latex', 'parent', 'expr']):
+        db = openDb()
+
+        # Run query.
+        db.run('''
+        MATCH (parent:Context {{label:'{}'}})
+        CREATE (node:Variable {{label:'{}', latex:'{}', expr:'{}'}})
+        CREATE (node)-[:BelongsTo]->(parent)
+        '''.format(data['parent'], data['label'], data['latex'], data['expr']))
+
+        db.close()
+
+        return dumpMessage('processed')
+    else:
+        return dumpMessage('failed', 'Incomplete data.')
 
 
 @server.route('/context/', methods=['POST'])
 def appendContext():
     """
     Append context to the given parent context.
-    If no parent is defined the context is appended to the context root.
+    If no parent is defined the context is appended to the root context.
     """
 
     data = request.get_json()
-    if isinstance(data, dict) and 'label' in data:
+    if isDictAndContains(data, ['label']):
         db = openDb()
 
         # Find parent query.
-        parent = "Context {label:'%s'}" % data[
-            'parent'] if 'parent' in data else 'ContextRoot'
+        parent = "Context {label:'{}'}".format(data[
+            'parent']) if 'parent' in data else 'ContextRoot'
 
         # Run query.
         db.run('''
-        MATCH (parent:%s)
-        CREATE (node:Context {label:'%s'})
+        MATCH (parent:{})
+        CREATE (node:Context {{label:'{}'}})
         CREATE (node)-[:BelongsTo]->(parent)
-        ''' % (parent, data['label']))
+        '''.format(parent, data['label']))
 
         db.close()
 
-        return json.dumps({
-            'status': 'processed'
-        })
+        return dumpMessage('processed')
     else:
-        return json.dumps({
-            'status': 'failed',
-            'message': 'No context label provided.'
-        })
+        return dumpMessage('failed', 'No context label provided.')
