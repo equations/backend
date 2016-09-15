@@ -6,6 +6,10 @@ from flask import Flask, request
 from neo4j.v1 import GraphDatabase, basic_auth
 from .helpers import *
 
+
+# TODO: consider using http://flask-restful.readthedocs.io/en/latest/
+# http://blog.miguelgrinberg.com/post/designing-a-restful-api-using-flask-restful
+
 # Define Flask server instance.
 server = Flask(__name__)
 driver = GraphDatabase.driver(
@@ -54,13 +58,43 @@ def textSearch():
     return '{}'
 
 
-@server.route('/derive/', methods=['POST'])
+@server.route('/derivation/', methods=['POST'])
 def appendDerivation():
     """
-    Append derivation to exiting equation.
+    # Add derivation
+
+    A derivation has the following structure:
+    - One source relation: the derivation loads an external equation as base,
+      the source can be either a variable defenition or another derivation.
+    - A number of substitutions: in the derivation other equations or variable
+      definitions can be used for substitution.
+    - Rewritten expression: the expression that is equal to the source equation
+      after all substitutions are applied.
+
+    A derivation does not neccesarily have to substitute other equations. It can
+    simply be a rewritten form of the source equation. Note that SymPy can
+    assist in creating derivations. The main point is providing a more flexible
+    environment for adding custom derivations, and controlling which steps are
+    shown to the user.
     """
 
-    return '{}'
+    data = request.get_json()
+    if isDictAndContains(data, ['source', 'subs', 'expr']):
+        db = openDb()
+
+        # Retrieve source equation.
+
+        # Execute substitutions.
+
+        # Check output expression.
+
+        # Write expression to database.
+
+        db.close()
+
+        return dumpMessage('processed')
+    else:
+        return dumpMessage('failed', 'Incomplete data.')
 
 
 @server.route('/variable/', methods=['POST'])
