@@ -7,9 +7,6 @@ from neo4j.v1 import GraphDatabase, basic_auth
 from .helpers import *
 
 
-# TODO: consider using http://flask-restful.readthedocs.io/en/latest/
-# http://blog.miguelgrinberg.com/post/designing-a-restful-api-using-flask-restful
-
 # Define Flask server instance.
 server = Flask(__name__)
 driver = GraphDatabase.driver(

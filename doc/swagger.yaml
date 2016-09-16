@@ -1,0 +1,79 @@
+swagger: '2.0'
+info:
+  title: Equations API
+  description: The Equation Database API
+  version: '0.0.1'
+host: api.equations.wiki
+schemes:
+- https
+basePath: /v0
+produces:
+- application/json
+paths:
+  /context:
+    get:
+      description: List contexts
+      parameters: []
+      responses:
+        200:
+          description: An array of contexts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Context'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+    post:
+      description: Create new context
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NewContext'
+      responses:
+        200:
+          description: An array of contexts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Context'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+definitions:
+  NewContext:
+    type: object
+    required:
+    - label
+    properties:
+      label:
+        type: string
+        description: Context name
+      parent:
+        type: string
+        description: Context parent
+  Context:
+    type: object
+    properties:
+      label:
+        type: string
+        description: Context name
+      children:
+        type: array
+        items:
+          $ref: '#/definitions/Context'
+  Status:
+    type: object
+    properties:
+      status:
+        type: string
+        description: Request status identifier
+      message:
+        type: string
+        description: Status message
