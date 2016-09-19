@@ -28,20 +28,96 @@ paths:
     post:
       description: Create new context
       consumes:
-        - application/json
+      - application/json
       parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/NewContext'
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/NewContext'
       responses:
         200:
-          description: An array of contexts
+          description: The newly created context
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Context'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+  /variable:
+    get:
+      description: List variables
+      parameters: []
+      responses:
+        200:
+          description: An array of variables
           schema:
             type: array
             items:
-              $ref: '#/definitions/Context'
+              $ref: '#/definitions/Variable'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+    post:
+      description: Create new variable
+      consumes:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/Variable'
+      responses:
+        200:
+          description: The newly created variable
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Variable'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+  /derivation:
+    get:
+      description: List derivations
+      parameters: []
+      responses:
+        200:
+          description: An array of derivations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Derivation'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+    post:
+      description: Create new derivation
+      consumes:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/Derivation'
+      responses:
+        200:
+          description: The newly created and evaluated derivation
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Derivation'
+        400:
+          description: Derivation could not be evaluated.
+          schema:
+            $ref: '#/definitions/Status'
         default:
           description: Unexpected error
           schema:
@@ -68,6 +144,56 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Context'
+      variables:
+        type: array
+        items:
+          $ref: '#/definitions/Variable'
+  Variable:
+    type: object
+    required:
+    - label
+    - latex
+    - parent
+    - expr
+    - variables
+    properties:
+      label:
+        type: string
+        description: Variable name
+      latex:
+        type: string
+        description: LaTeX notation for this variable
+      parent:
+        type: string
+        description: Variable parent
+      expr:
+        type: string
+        description: SymPy expression
+      variables:
+        type: array
+        description: Dependant variables
+        items:
+          type: object
+          additionalProperties:
+            type: string
+  Derivation:
+    type: object
+    required:
+    - base
+    - subs
+    - expr
+    properties:
+      base:
+        type: string
+        description: Base equation
+      subs:
+        type: array
+        description: Derivation substitutions
+        items:
+          type: string
+      expr:
+        type: string
+        description: Simplified SymPy expression
   Status:
     type: object
     properties:
