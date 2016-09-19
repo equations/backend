@@ -15,7 +15,7 @@ paths:
   # Retrieve context by context label.
   /context/{label}:
     get:
-      operationId: eqs_backend.read_context
+      operationId: src.read_context
       description: Retrieve context by context label.
       parameters:
       - name: label
@@ -41,7 +41,7 @@ paths:
   /context:
     # Retrieve root context.
     get:
-      operationId: eqs_backend.read_root_context
+      operationId: src.read_root_context
       description: Retrieve root context.
       parameters:
       - name: depth
@@ -61,7 +61,7 @@ paths:
 
     # Create new context (immutable).
     post:
-      operationId: eqs_backend.create_context
+      operationId: src.create_context
       description: Create new context (immutable).
       consumes:
       - application/json
@@ -86,7 +86,7 @@ paths:
   # Retrieve variable by label.
   /variable/{label}:
     get:
-      operationId: eqs_backend.read_variable
+      operationId: src.read_variable
       description: Retrieve variable by label.
       parameters:
       - name: label
@@ -107,7 +107,7 @@ paths:
   /variable:
     # Find variables using SymPy expression query.
     get:
-      operationId: eqs_backend.find_variables
+      operationId: src.find_variables
       description: Find variables using SymPy expression query.
       parameters:
       - name: q
@@ -129,7 +129,7 @@ paths:
 
     # Create new variable (immutable).
     post:
-      operationId: eqs_backend.create_variable
+      operationId: src.create_variable
       description: Create new variable (immutable).
       consumes:
       - application/json
@@ -154,7 +154,7 @@ paths:
   /derivation:
     # Find derivations using SymPy expression query.
     get:
-      operationId: eqs_backend.find_derivations
+      operationId: src.find_derivations
       description: Find derivations using SymPy expression query.
       parameters:
       - name: q
@@ -176,7 +176,7 @@ paths:
 
     # Create new derivation (immutable).
     post:
-      operationId: eqs_backend.create_derivation
+      operationId: src.create_derivation
       description: Create new derivation (immutable).
       consumes:
       - application/json

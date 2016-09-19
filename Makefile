@@ -8,11 +8,10 @@ init:
 check:
 	# Run tests.
 
-run-server:
-	# Run server.
-	sudo python3 run.py
+run-server-dev:
+	./tool/run.sh
 
-run-neo4j:
+run-neo4j-dev:
 	# Run Neo4j docker container.
 	docker run \
 		--publish=7474:7474 --publish=7687:7687 \

@@ -3,7 +3,7 @@
 # that can be found in the LICENSE file.
 
 import connexion
-import eqs_backend
+import src
 
 if __name__ == '__main__':
     app = connexion.App(__name__, specification_dir='./doc/')

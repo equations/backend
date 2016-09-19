@@ -19,5 +19,5 @@ setup(
     author_email='hermanbergwerf@gmail.com',
     url='https://github.com/equations/backend',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs'))
+    packages=find_packages(exclude=('tests', 'doc'))
 )
