@@ -10,17 +10,43 @@ basePath: /v0
 produces:
 - application/json
 paths:
-  /context:
+  /context/{label}:
     get:
       description: List contexts
-      parameters: []
+      parameters:
+      - name: label
+        in: path
+        type: string
+        required: true
+        description: Target context label (defaults to the root context)
+      - name: depth
+        in: query
+        type: integer
+        default: 1
+        description: Number of included context levels
       responses:
         200:
-          description: An array of contexts
+          description: Target context data
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Context'
+            $ref: '#/definitions/Context'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+  /context:
+    get:
+      description: List contexts under root
+      parameters:
+      - name: depth
+        in: query
+        type: integer
+        default: 1
+        description: Number of included context levels
+      responses:
+        200:
+          description: Root context data
+          schema:
+            $ref: '#/definitions/Context'
         default:
           description: Unexpected error
           schema:
@@ -46,10 +72,33 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
-  /variable:
+  /variable/{label}:
     get:
       description: List variables
-      parameters: []
+      parameters:
+      - name: label
+        in: path
+        type: string
+        required: true
+        description: Target variable label
+      responses:
+        200:
+          description: An array of variables
+          schema:
+            $ref: '#/definitions/Variable'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Status'
+  /variable:
+    get:
+      description: Search variables
+      parameters:
+      - name: q
+        in: query
+        type: string
+        required: true
+        description: search expression
       responses:
         200:
           description: An array of variables
@@ -136,6 +185,8 @@ definitions:
         description: Context parent
   Context:
     type: object
+    required:
+    - label
     properties:
       label:
         type: string
@@ -153,47 +204,67 @@ definitions:
     required:
     - label
     - latex
+    - context
     - parent
     - expr
     - variables
     properties:
       label:
         type: string
-        description: Variable name
+        description: Unique variable name
       latex:
         type: string
         description: LaTeX notation for this variable
+      context:
+        type: string
+        description: Variable context
       parent:
         type: string
-        description: Variable parent
+        description: Parent variable
       expr:
         type: string
         description: SymPy expression
       variables:
-        type: array
+        type: object
         description: Dependant variables
-        items:
-          type: object
-          additionalProperties:
-            type: string
+        additionalProperties:
+          type: string
   Derivation:
     type: object
     required:
     - base
     - subs
-    - expr
+    - lhs
+    - rhs
     properties:
       base:
-        type: string
-        description: Base equation
+        $ref: '#/definitions/ExprRef'
       subs:
         type: array
-        description: Derivation substitutions
+        description: Substitutions
         items:
-          type: string
-      expr:
+          $ref: '#/definitions/ExprRef'
+      lhs:
         type: string
-        description: Simplified SymPy expression
+        description: Left hand side equation
+      rhs:
+        type: string
+        description: Right hand side equation
+  ExprRef:
+    type: object
+    required:
+    - type
+    - id
+    properties:
+      type:
+        type: string
+        enum:
+        - variable
+        - derivation
+        description: Request status identifier
+      id:
+        type: integer
+        description: Reference ID
   Status:
     type: object
     properties:
