@@ -5,6 +5,9 @@ init:
 	# Install dependencies.
 	sudo pip3 install -r requirements.txt
 
+	# Copy env config to local file.
+	cp .dev.conf dev.conf
+
 check:
 	# Run tests.
 

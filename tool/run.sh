@@ -5,7 +5,7 @@
 # that can be found in the LICENSE file.
 
 # Export Neo4j credentials.
-source dev.config
+source dev.conf
 
 # Run server.
 sudo -E python3 run.py
