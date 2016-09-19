@@ -9,10 +9,14 @@ schemes:
 basePath: /v0
 produces:
 - application/json
+
 paths:
+
+  # Retrieve context by context label.
   /context/{label}:
     get:
-      description: List contexts
+      operationId: eqs_backend.read_context
+      description: Retrieve context by context label.
       parameters:
       - name: label
         in: path
@@ -33,9 +37,12 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
   /context:
+    # Retrieve root context.
     get:
-      description: List contexts under root
+      operationId: eqs_backend.read_root_context
+      description: Retrieve root context.
       parameters:
       - name: depth
         in: query
@@ -51,8 +58,11 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
+    # Create new context (immutable).
     post:
-      description: Create new context
+      operationId: eqs_backend.create_context
+      description: Create new context (immutable).
       consumes:
       - application/json
       parameters:
@@ -72,9 +82,12 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
+  # Retrieve variable by label.
   /variable/{label}:
     get:
-      description: List variables
+      operationId: eqs_backend.read_variable
+      description: Retrieve variable by label.
       parameters:
       - name: label
         in: path
@@ -90,15 +103,18 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
   /variable:
+    # Find variables using SymPy expression query.
     get:
-      description: Search variables
+      operationId: eqs_backend.find_variables
+      description: Find variables using SymPy expression query.
       parameters:
       - name: q
         in: query
         type: string
         required: true
-        description: search expression
+        description: SymPy expression to search for (contains query)
       responses:
         200:
           description: An array of variables
@@ -110,8 +126,11 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
+    # Create new variable (immutable).
     post:
-      description: Create new variable
+      operationId: eqs_backend.create_variable
+      description: Create new variable (immutable).
       consumes:
       - application/json
       parameters:
@@ -131,10 +150,18 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
   /derivation:
+    # Find derivations using SymPy expression query.
     get:
-      description: List derivations
-      parameters: []
+      operationId: eqs_backend.find_derivations
+      description: Find derivations using SymPy expression query.
+      parameters:
+      - name: q
+        in: query
+        type: string
+        required: true
+        description: SymPy expression to search for (contains query)
       responses:
         200:
           description: An array of derivations
@@ -146,8 +173,11 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
+    # Create new derivation (immutable).
     post:
-      description: Create new derivation
+      operationId: eqs_backend.create_derivation
+      description: Create new derivation (immutable).
       consumes:
       - application/json
       parameters:
@@ -171,7 +201,9 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Status'
+
 definitions:
+  # Data to create new context.
   NewContext:
     type: object
     required:
@@ -183,11 +215,16 @@ definitions:
       parent:
         type: string
         description: Context parent
+
+  # Equation context (imposes it's own variables and implementations)
   Context:
     type: object
     required:
     - label
     properties:
+      id:
+        type: integer
+        description: Context database ID
       label:
         type: string
         description: Context name
@@ -199,6 +236,8 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Variable'
+
+  # Variable defined or implemented within the given context.
   Variable:
     type: object
     required:
@@ -209,6 +248,9 @@ definitions:
     - expr
     - variables
     properties:
+      id:
+        type: integer
+        description: Variable database ID
       label:
         type: string
         description: Unique variable name
@@ -229,6 +271,8 @@ definitions:
         description: Dependant variables
         additionalProperties:
           type: string
+
+  # Mathematical derivation based on variable expressions and other derivations.
   Derivation:
     type: object
     required:
@@ -237,6 +281,9 @@ definitions:
     - lhs
     - rhs
     properties:
+      id:
+        type: integer
+        description: Derivation database ID
       base:
         $ref: '#/definitions/ExprRef'
       subs:
@@ -250,6 +297,8 @@ definitions:
       rhs:
         type: string
         description: Right hand side equation
+
+  # Expression reference
   ExprRef:
     type: object
     required:
@@ -265,6 +314,8 @@ definitions:
       id:
         type: integer
         description: Reference ID
+
+  # Status info (used to report unexpected behavior)
   Status:
     type: object
     properties:

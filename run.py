@@ -2,7 +2,14 @@
 # Use of this source code is governed by an AGPL-3.0-style license
 # that can be found in the LICENSE file.
 
-from eqs_backend.eqs_backend import server
+import connexion
+import eqs_backend
 
-if __name__ == "__main__":
-    server.run(port=8080)
+if __name__ == '__main__':
+    app = connexion.App(__name__, specification_dir='./doc/')
+    app.add_api(
+        'swagger.yaml',
+        strict_validation=True,
+        arguments={
+            'title': 'The Equation Database API'})
+    app.run(port=8080)
