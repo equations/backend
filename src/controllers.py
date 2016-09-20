@@ -2,15 +2,22 @@
 # Use of this source code is governed by an AGPL-3.0-style license
 # that can be found in the LICENSE file.
 
-from .dbutils import *
+from .context import *
 
 
-def read_context(label, depth=1) -> str:
+def read_context(label, depth=0) -> str:
     """
     Retrieve context by context label.
     """
 
-    return '{}'
+    session = open_session()
+    data = query_context(
+        ":Context {{label:'{}'}}".format(label),
+        depth,
+        session,
+        vars_info=True)
+    session.close()
+    return data
 
 
 def read_root_context(depth=1) -> str:
@@ -18,7 +25,10 @@ def read_root_context(depth=1) -> str:
     Retrieve root context.
     """
 
-    return '{}'
+    session = open_session()
+    data = query_context(':ContextRoot', depth, session, children_only=True)
+    session.close()
+    return data
 
 
 def create_context(body) -> str:

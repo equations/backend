@@ -17,9 +17,16 @@ def setup_db_constraints():
     Setup database constraints.
     """
 
-    db.run('CREATE (:ContextRoot)')
-    db.run('CREATE CONSTRAINT ON (node:Context) ASSERT node.label IS UNIQUE')
-    db.run('CREATE CONSTRAINT ON (node:Variable) ASSERT node.label IS UNIQUE')
+    db.run('''
+CREATE (:ContextRoot)
+CREATE INDEX ON :Context(label)
+CREATE INDEX ON :Variable(label)
+CREATE INDEX ON :Variable(expr)
+CREATE INDEX ON :Derivation(lhs)
+CREATE INDEX ON :Derivation(rhs)
+CREATE CONSTRAINT ON (node:Context) ASSERT node.label IS UNIQUE
+CREATE CONSTRAINT ON (node:Variable) ASSERT node.label IS UNIQUE
+''')
 
 
 def open_session():
