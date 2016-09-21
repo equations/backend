@@ -51,7 +51,7 @@ def query_context(query, depth, session, children_only=False, vars_info=False):
 
     if root is None:
         return {
-            'status': 'notfound',
+            'status': 'not-found',
             'message': 'Request context root could not be found.'
         }, 404
 

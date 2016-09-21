@@ -12,7 +12,7 @@ def read_context(label, depth=0) -> str:
 
     session = open_session()
     data = query_context(
-        ":Context {{label:'{}'}}".format(label),
+        ":Context {{label: '{}'}}".format(label),
         depth,
         session,
         vars_info=True)
@@ -36,7 +36,38 @@ def create_context(body) -> str:
     Create new context (immutable).
     """
 
-    return '{}'
+    # Read parent and label.
+    label = body['label']
+    parent = body['parent'] if 'parent' in body else None
+
+    # Check label and parent formatting (lowercase alpha only).
+    if label.isalpha and label.islower() and (
+            parent is None or parent.isalpha() and parent.islower()):
+        parent_query = ":Context {{label: '{}'}}".format(
+            parent) if parent is not None else ':ContextRoot'
+
+        # Create new context node.
+        session = open_session()
+        result = session.run('''
+            MATCH (parent{})
+            CREATE (node:Context {{label: '{}'}})-[:BelongsTo]->(parent)
+            RETURN node
+            '''.format(parent_query, label))
+
+        record = result.single().values()[0]
+        print(dict(record))
+
+        session.close()
+
+        return {
+            'id': record.id,
+            'label': record.properties['label']
+        }
+    else:
+        return {
+            'status': 'format-error',
+            'message': 'Rejected based on incorrect string formatting.'
+        }, 400
 
 
 def find_variables(q) -> str:
