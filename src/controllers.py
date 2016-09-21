@@ -2,8 +2,9 @@
 # Use of this source code is governed by an AGPL-3.0-style license
 # that can be found in the LICENSE file.
 
-from .context import *
 from .utils import *
+from .context import *
+from .derivation import *
 
 
 def read_context(label, depth=0) -> str:
@@ -137,5 +138,22 @@ def create_derivation(body) -> str:
     simply be a rewritten form of the source equation. Note that SymPy can also
     find simple derivations.
     """
+
+    # Create expression manager.
+
+    # Load base.
+    base = ExprRef(body['base'])
+
+    # Load dependant variables.
+
+    # Evaluate base.
+
+    # Load substitutions.
+
+    # Evaluate substitutions.
+
+    # Compare result to user result.
+
+    # Store derivation in database.
 
     return '{}'

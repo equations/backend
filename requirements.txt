@@ -1,3 +1,4 @@
 sympy
 connexion
 neo4j-driver
+py2neo

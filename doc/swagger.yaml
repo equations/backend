@@ -295,6 +295,9 @@ definitions:
       rhs:
         type: string
         description: Right hand side equation
+      latex:
+        type: string
+        description: LaTeX rendering of the derivation result
 
   # Expression reference
   ExprRef:

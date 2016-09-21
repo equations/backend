@@ -2,10 +2,14 @@
 # Use of this source code is governed by an AGPL-3.0-style license
 # that can be found in the LICENSE file.
 
-import re
-
-spinal_case_re = re.compile(r'[a-z-]+')
+from enum import Enum
 
 
-def is_spinal_case(string):
-    return spinal_case_re.match(string) is not None
+class ExprRefType(Enum):
+    variable = 1
+    derivation = 2
+
+
+class ExprRef:
+    reftype = None
+    refid = None

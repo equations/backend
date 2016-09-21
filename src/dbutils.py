@@ -4,6 +4,7 @@
 
 import os
 from neo4j.v1 import GraphDatabase, basic_auth
+from py2neo import Graph, authenticate
 
 driver = GraphDatabase.driver(
     'bolt://0.0.0.0',
