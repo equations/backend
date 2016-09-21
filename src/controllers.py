@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 
 from .context import *
+from .utils import *
 
 
 def read_context(label, depth=0) -> str:
@@ -41,28 +42,17 @@ def create_context(body) -> str:
     parent = body['parent'] if 'parent' in body else None
 
     # Check label and parent formatting (lowercase alpha only).
-    if label.isalpha and label.islower() and (
-            parent is None or parent.isalpha() and parent.islower()):
+    if is_spinal_case(label) and (
+            parent is None or is_spinal_case(parent)):
         parent_query = ":Context {{label: '{}'}}".format(
             parent) if parent is not None else ':ContextRoot'
 
         # Create new context node.
-        session = open_session()
-        result = session.run('''
+        return create_record('''
             MATCH (parent{})
             CREATE (node:Context {{label: '{}'}})-[:BelongsTo]->(parent)
             RETURN node
             '''.format(parent_query, label))
-
-        record = result.single().values()[0]
-        print(dict(record))
-
-        session.close()
-
-        return {
-            'id': record.id,
-            'label': record.properties['label']
-        }
     else:
         return {
             'status': 'format-error',
@@ -91,7 +81,36 @@ def create_variable(body) -> str:
     Create new variable (immutable).
     """
 
-    return '{}'
+    # Read label, latex, context, parent, expr
+    label = body['label']
+    latex = body['latex']
+    context = body['context']
+    parent = body['parent'] if 'parent' in body else None
+    expr = body['expr']
+
+    # TODO: check LaTeX and expression formatting.
+    # TODO: check validity of parent variable.
+    if is_spinal_case(context) and (parent is None or is_spinal_case(parent)):
+        # Create new context node.
+        if parent is None:
+            return create_record('''
+                MATCH (context:Context {{label: '{}'}})
+                CREATE (node:Variable {{label: '{}', latex: '{}', expr: '{}'}})-[:BelongsTo]->(context)
+                RETURN node
+                '''.format(context, label, latex, expr))
+        else:
+            return create_record('''
+                MATCH (context:Context {{label: '{}'}})
+                MATCH (parent:Variable {{label: '{}'}})
+                CREATE (node:Variable {{label: '{}', latex: '{}', expr: '{}'}})-[:BelongsTo]->(context)
+                CREATE (node)-[:Implements]->(parent)
+                RETURN node
+                '''.format(context, parent, label, latex, expr))
+    else:
+        return {
+            'status': 'format-error',
+            'message': 'Rejected based on incorrect string formatting.'
+        }, 400
 
 
 def find_derivations(q) -> str:

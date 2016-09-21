@@ -244,9 +244,7 @@ definitions:
     - label
     - latex
     - context
-    - parent
     - expr
-    - variables
     properties:
       id:
         type: integer

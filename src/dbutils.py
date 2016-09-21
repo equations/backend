@@ -35,3 +35,13 @@ def open_session():
     """
 
     return driver.session()
+
+
+def create_record(query):
+    session = open_session()
+    result = session.run(query)
+    record = result.single().values()[0]
+    data = record.properties
+    data['id'] = record.id
+    session.close()
+    return data
