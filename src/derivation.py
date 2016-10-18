@@ -10,6 +10,9 @@ def resolve_variables(expr) -> list:
     Function to find all variables in a SymPy expression. This function assumes
     all non variables are followed by an opening parenthesis, this might not
     always be the case.
+
+    Notes:
+    - This approach collides with built-in symbols like pi and E.
     """
 
     rmfns = re.compile(r'[A-z]+\(')

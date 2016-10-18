@@ -10,15 +10,27 @@ driver = GraphDatabase.driver(
     'bolt://0.0.0.0',
     auth=basic_auth(
         os.getenv('EQS_NEO4J_USER'),
-        os.getenv('EQS_NEO4J_PASS')))
+        'dev'))
+
+# print(os.getenv('EQS_NEO4J_PASS'))
+'''
+# authenticate(
+#    "0.0.0.0:7474",
+#    os.getenv('EQS_NEO4J_USER'),
+#    os.getenv('EQS_NEO4J_PASS'))
+graph = Graph(bolt=True, host='0.0.0.0', user=os.getenv('EQS_NEO4J_USER'),
+              password='neo4j')
+print(graph.data("MATCH (a:Context) RETURN a.label"))
+'''
 
 
-def setup_db_constraints():
+def init_db():
     """
     Setup database constraints.
     """
 
-    db.run('''
+    session = open_session()
+    session.run('''
 CREATE (:ContextRoot)
 CREATE INDEX ON :Context(label)
 CREATE INDEX ON :Variable(label)
@@ -28,6 +40,7 @@ CREATE INDEX ON :Derivation(rhs)
 CREATE CONSTRAINT ON (node:Context) ASSERT node.label IS UNIQUE
 CREATE CONSTRAINT ON (node:Variable) ASSERT node.label IS UNIQUE
 ''')
+    session.close()
 
 
 def open_session():
